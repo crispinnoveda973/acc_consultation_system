@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block title %}{{ "New User" if mode == "new" else "Edit User" }} — {{ site_name }}{% endblock %}
+{% block page_title %}{{ "Create New User" if mode == "new" else "Edit User" }}{% endblock %}
+{% block page_subtitle %}{{ "Add a Student, Medical Expert, or Super Admin account" if mode == "new" else "Update account details" }}{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 640px;">
+  <form method="POST">
+    <div class="form-group">
+      <label for="full_name">Full name</label>
+      <input type="text" id="full_name" name="full_name" value="{{ values.full_name }}" required>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="username">Username</label>
+        <input type="text" id="username" name="username" value="{{ values.username }}" {{ 'readonly' if mode == 'edit' }} required>
+      </div>
+      <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="email" value="{{ values.email }}" required>
+      </div>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="role">Role</label>
+        <select id="role" name="role" required>
+          {% for r in roles %}
+          <option value="{{ r }}" {{ 'selected' if values.role == r }}>
+            {{ {'super_admin':'Super Admin','medical_expert':'Medical Expert','student':'Student'}[r] }}
+          </option>
+          {% endfor %}
+        </select>
+      </div>
+      <div class="form-group">
+        <label for="program">Program / Specialty <span class="hint">optional</span></label>
+        <input type="text" id="program" name="program" value="{{ values.program }}">
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="password">{{ "Password" if mode == "new" else "New password" }} {% if mode == "edit" %}<span class="hint">leave blank to keep current</span>{% endif %}</label>
+      <input type="password" id="password" name="password" {{ 'required' if mode == 'new' }}>
+    </div>
+
+    {% if mode == "edit" %}
+    <div class="form-group checkbox-row">
+      <input type="checkbox" id="is_active" name="is_active" {{ 'checked' if values.is_active_account }}>
+      <label for="is_active" style="margin:0;">Account is active</label>
+    </div>
+    {% endif %}
+
+    <div class="flex-between mt-1">
+      <a href="{{ url_for('admin.users') }}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">{{ "Create User" if mode == "new" else "Save Changes" }}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

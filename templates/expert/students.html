@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block title %}My Students — {{ site_name }}{% endblock %}
+{% block page_title %}My Students{% endblock %}
+{% block page_subtitle %}Students you have consulted with{% endblock %}
+
+{% block content %}
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Name</th><th>Email</th><th>Program</th></tr></thead>
+    <tbody>
+      {% for s in students %}
+      <tr>
+        <td><span class="avatar-sm">{{ s.full_name[0]|upper }}</span>{{ s.full_name }}</td>
+        <td>{{ s.email }}</td>
+        <td>{{ s.program or "—" }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="3"><div class="empty-state">No students yet — claim a consultation to get started.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

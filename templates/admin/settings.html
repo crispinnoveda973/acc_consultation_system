@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Settings — {{ site_name }}{% endblock %}
+{% block page_title %}System Settings{% endblock %}
+{% block page_subtitle %}Configure system-wide preferences{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 560px;">
+  <form method="POST">
+    <div class="form-group">
+      <label for="site_name">Site Name</label>
+      <input type="text" id="site_name" name="site_name" value="{{ settings.site_name }}" required>
+    </div>
+    <div class="form-group">
+      <label for="support_email">Support Email</label>
+      <input type="email" id="support_email" name="support_email" value="{{ settings.support_email }}">
+    </div>
+    <div class="form-group checkbox-row">
+      <input type="checkbox" id="maintenance_mode" name="maintenance_mode" {{ 'checked' if settings.maintenance_mode == 'on' }}>
+      <label for="maintenance_mode" style="margin:0;">Enable maintenance mode banner</label>
+    </div>
+    <button type="submit" class="btn btn-primary">Save Settings</button>
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}{{ c.subject }} — {{ site_name }}{% endblock %}
+{% block page_title %}Consultation #{{ c.id }}{% endblock %}
+{% block page_subtitle %}{{ c.subject }}{% endblock %}
+
+{% block content %}
+<a href="{{ url_for('student.history') }}" class="btn btn-ghost btn-sm" style="margin-bottom:1rem;">&larr; Back to history</a>
+
+<div class="detail-grid">
+  <div class="card">
+    <h3>{{ c.subject }}</h3>
+    <p class="text-muted">{{ c.description }}</p>
+
+    <div class="section-title">Conversation</div>
+    <div class="thread">
+      {% for m in c.messages %}
+      <div class="message {{ 'mine' if m.sender_id == current_user.id else 'theirs' }}">
+        <div class="meta">{{ m.sender.full_name }} &middot; {{ m.created_at.strftime('%b %d, %H:%M') }}</div>
+        {{ m.body }}
+      </div>
+      {% else %}
+      <p class="text-muted">No responses yet. A Medical Expert will reply soon.</p>
+      {% endfor %}
+    </div>
+
+    {% if c.status != 'closed' %}
+    <form method="POST" class="mt-1">
+      <div class="form-group">
+        <label for="body">Add a message</label>
+        <textarea id="body" name="body" placeholder="Add more details or ask a follow-up question..."></textarea>
+      </div>
+      <button type="submit" class="btn btn-primary">Send Message</button>
+    </form>
+    {% else %}
+    <p class="text-muted mt-1">This consultation is closed.</p>
+    {% endif %}
+  </div>
+
+  <div class="card">
+    <h3 style="font-size:1rem;">Details</h3>
+    <div class="meta-list">
+      <div class="meta-item"><span>Assigned Expert</span><span>{{ c.expert.full_name if c.expert else "Awaiting assignment" }}</span></div>
+      <div class="meta-item"><span>Status</span><span><span class="badge badge-{{ c.status }}">{{ c.status_label() }}</span></span></div>
+      <div class="meta-item"><span>Priority</span><span><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></span></div>
+      <div class="meta-item"><span>Submitted</span><span>{{ c.created_at.strftime('%b %d, %Y %H:%M') }}</span></div>
+      <div class="meta-item"><span>Last updated</span><span>{{ c.updated_at.strftime('%b %d, %Y %H:%M') }}</span></div>
+    </div>
+  </div>
+</div>
+{% endblock %}

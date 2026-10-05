@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Log in — {{ site_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <div class="auth-brand">
+        <div class="logo-mark">ACC</div>
+        <div class="brand-text">
+          <strong>{{ site_name }}</strong>
+          <span>Campus Health Portal</span>
+        </div>
+      </div>
+
+      <h2>Welcome back</h2>
+      <p class="auth-subtitle">Log in to manage or request consultations.</p>
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          <div class="flash-messages">
+            {% for category, message in messages %}
+              <div class="flash flash-{{ category }}">
+                <span>{{ message }}</span>
+                <button class="flash-close" type="button">&times;</button>
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      {% endwith %}
+
+      <form method="POST" action="{{ url_for('auth.login') }}">
+        <div class="form-group">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" placeholder="e.g. jdoe" required autofocus>
+        </div>
+        <div class="form-group">
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" placeholder="••••••••" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Log In</button>
+      </form>
+
+      <div class="auth-footer">
+        New student? <a href="{{ url_for('auth.register') }}">Create an account</a>
+      </div>
+
+      <div class="demo-accounts">
+        <strong>Demo accounts</strong> (seeded via <code>init_db.py</code>):<br>
+        Super Admin: <strong>admin</strong> / admin123<br>
+        Medical Expert: <strong>dr.santos</strong> / expert123<br>
+        Student: <strong>jdoe</strong> / student123
+      </div>
+    </div>
+  </div>
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+</body>
+</html>

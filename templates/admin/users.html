@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Manage Users — {{ site_name }}{% endblock %}
+{% block page_title %}Manage Users{% endblock %}
+{% block page_subtitle %}Create, edit, and deactivate accounts{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>All Users</h2>
+    <p>{{ users|length }} account(s)</p>
+  </div>
+  <a href="{{ url_for('admin.new_user') }}" class="btn btn-primary">+ New User</a>
+</div>
+
+<div class="filter-row">
+  <a href="{{ url_for('admin.users') }}" class="filter-pill {{ 'active' if not role_filter }}">All</a>
+  <a href="{{ url_for('admin.users', role='super_admin') }}" class="filter-pill {{ 'active' if role_filter == 'super_admin' }}">Super Admins</a>
+  <a href="{{ url_for('admin.users', role='medical_expert') }}" class="filter-pill {{ 'active' if role_filter == 'medical_expert' }}">Medical Experts</a>
+  <a href="{{ url_for('admin.users', role='student') }}" class="filter-pill {{ 'active' if role_filter == 'student' }}">Students</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Name</th><th>Username</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th></th></tr>
+    </thead>
+    <tbody>
+      {% for u in users %}
+      <tr>
+        <td><span class="avatar-sm">{{ u.full_name[0]|upper }}</span>{{ u.full_name }}</td>
+        <td>{{ u.username }}</td>
+        <td>{{ u.email }}</td>
+        <td><span class="role-pill {{ u.role }}">{{ u.role_label() }}</span></td>
+        <td>
+          {% if u.is_active_account %}
+            <span class="badge badge-resolved">Active</span>
+          {% else %}
+            <span class="badge badge-closed">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="text-muted">{{ u.created_at.strftime('%b %d, %Y') }}</td>
+        <td style="text-align:right; white-space:nowrap;">
+          <a href="{{ url_for('admin.edit_user', user_id=u.id) }}" class="btn btn-outline btn-sm">Edit</a>
+          {% if u.id != current_user.id %}
+          <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}" style="display:inline;" data-confirm="Delete user '{{ u.username }}'? This cannot be undone.">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+          </form>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="7"><div class="empty-state">No users found.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ site_name }}{% endblock %}
+{% block page_title %}Super Admin Dashboard{% endblock %}
+{% block page_subtitle %}System-wide overview of users and consultations{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card accent-purple">
+    <div class="stat-value">{{ total_users }}</div>
+    <div class="stat-label">Total Users</div>
+  </div>
+  <div class="stat-card accent-teal">
+    <div class="stat-value">{{ total_students }}</div>
+    <div class="stat-label">Students</div>
+  </div>
+  <div class="stat-card accent-orange">
+    <div class="stat-value">{{ total_experts }}</div>
+    <div class="stat-label">Medical Experts</div>
+  </div>
+  <div class="stat-card accent-purple">
+    <div class="stat-value">{{ total_consultations }}</div>
+    <div class="stat-label">Total Consultations</div>
+  </div>
+  <div class="stat-card accent-orange">
+    <div class="stat-value">{{ pending }}</div>
+    <div class="stat-label">Pending</div>
+  </div>
+  <div class="stat-card accent-teal">
+    <div class="stat-value">{{ resolved }}</div>
+    <div class="stat-label">Resolved</div>
+  </div>
+</div>
+
+<div class="page-header">
+  <div>
+    <h2>Recent Consultations</h2>
+    <p>The latest requests submitted across the system</p>
+  </div>
+  <a href="{{ url_for('admin.consultations') }}" class="btn btn-outline">View all</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Subject</th><th>Student</th><th>Expert</th><th>Priority</th><th>Status</th><th>Submitted</th></tr>
+    </thead>
+    <tbody>
+      {% for c in recent %}
+      <tr onclick="window.location='{{ url_for('admin.consultation_detail', cid=c.id) }}'" style="cursor:pointer;">
+        <td>{{ c.subject }}</td>
+        <td>{{ c.student.full_name }}</td>
+        <td>{{ c.expert.full_name if c.expert else "Unassigned" }}</td>
+        <td><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></td>
+        <td><span class="badge badge-{{ c.status }}">{{ c.status_label() }}</span></td>
+        <td class="text-muted">{{ c.created_at.strftime('%b %d, %Y') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6"><div class="empty-state">No consultations yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

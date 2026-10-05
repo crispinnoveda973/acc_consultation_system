@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ site_name }}{% endblock %}
+{% block page_title %}My Dashboard{% endblock %}
+{% block page_subtitle %}Track your consultation requests{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card accent-purple"><div class="stat-value">{{ stats.total }}</div><div class="stat-label">Total Requests</div></div>
+  <div class="stat-card accent-orange"><div class="stat-value">{{ stats.pending }}</div><div class="stat-label">Pending</div></div>
+  <div class="stat-card accent-teal"><div class="stat-value">{{ stats.in_progress }}</div><div class="stat-label">In Progress</div></div>
+  <div class="stat-card accent-teal"><div class="stat-value">{{ stats.resolved }}</div><div class="stat-label">Resolved</div></div>
+</div>
+
+<div class="page-header">
+  <div><h2>Recent Consultations</h2><p>Your latest submitted requests</p></div>
+  <a href="{{ url_for('student.new_consultation') }}" class="btn btn-primary">+ New Consultation</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Subject</th><th>Priority</th><th>Status</th><th>Submitted</th></tr></thead>
+    <tbody>
+      {% for c in recent %}
+      <tr onclick="window.location='{{ url_for('student.consultation_detail', cid=c.id) }}'" style="cursor:pointer;">
+        <td>{{ c.subject }}</td>
+        <td><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></td>
+        <td><span class="badge badge-{{ c.status }}">{{ c.status_label() }}</span></td>
+        <td class="text-muted">{{ c.created_at.strftime('%b %d, %Y') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="4"><div class="empty-state">You haven't submitted any consultations yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

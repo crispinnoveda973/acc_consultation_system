@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% block title %}Dashboard — {{ site_name }}{% endblock %}
+{% block page_title %}Expert Dashboard{% endblock %}
+{% block page_subtitle %}Your assigned consultations at a glance{% endblock %}
+
+{% block content %}
+<div class="stat-grid">
+  <div class="stat-card accent-purple"><div class="stat-value">{{ stats.assigned }}</div><div class="stat-label">Assigned to Me</div></div>
+  <div class="stat-card accent-orange"><div class="stat-value">{{ stats.pending }}</div><div class="stat-label">Pending</div></div>
+  <div class="stat-card accent-teal"><div class="stat-value">{{ stats.in_progress }}</div><div class="stat-label">In Progress</div></div>
+  <div class="stat-card accent-teal"><div class="stat-value">{{ stats.resolved }}</div><div class="stat-label">Resolved</div></div>
+  <div class="stat-card accent-orange"><div class="stat-value">{{ stats.unassigned_pool }}</div><div class="stat-label">Unassigned Pool</div></div>
+</div>
+
+<div class="page-header">
+  <div><h2>My Recent Consultations</h2><p>Latest activity on cases assigned to you</p></div>
+  <a href="{{ url_for('expert.consultations', view='assigned') }}" class="btn btn-outline">View all</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Subject</th><th>Student</th><th>Priority</th><th>Status</th><th>Updated</th></tr></thead>
+    <tbody>
+      {% for c in recent %}
+      <tr onclick="window.location='{{ url_for('expert.consultation_detail', cid=c.id) }}'" style="cursor:pointer;">
+        <td>{{ c.subject }}</td>
+        <td>{{ c.student.full_name }}</td>
+        <td><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></td>
+        <td><span class="badge badge-{{ c.status }}">{{ c.status_label() }}</span></td>
+        <td class="text-muted">{{ c.updated_at.strftime('%b %d, %Y') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5"><div class="empty-state">No consultations assigned yet.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+{% if unassigned %}
+<div class="page-header" style="margin-top:1.8rem;">
+  <div><h2>Unassigned Pool</h2><p>Requests waiting for a Medical Expert to claim</p></div>
+  <a href="{{ url_for('expert.consultations', view='pool') }}" class="btn btn-outline">View pool</a>
+</div>
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Subject</th><th>Student</th><th>Priority</th><th>Submitted</th><th></th></tr></thead>
+    <tbody>
+      {% for c in unassigned[:5] %}
+      <tr>
+        <td>{{ c.subject }}</td>
+        <td>{{ c.student.full_name }}</td>
+        <td><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></td>
+        <td class="text-muted">{{ c.created_at.strftime('%b %d, %Y') }}</td>
+        <td style="text-align:right;">
+          <form method="POST" action="{{ url_for('expert.claim', cid=c.id) }}">
+            <button type="submit" class="btn btn-teal btn-sm">Claim</button>
+          </form>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+{% endblock %}

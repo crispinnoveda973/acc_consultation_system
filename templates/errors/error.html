@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Error {{ code }} — {{ site_name }}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card" style="text-align:center;">
+      <div class="logo-mark" style="margin: 0 auto 1rem; width:56px;height:56px;font-size:1.3rem;">{{ code }}</div>
+      <h2>{{ "Access denied" if code == 403 else "Not found" }}</h2>
+      <p class="auth-subtitle">{{ message }}</p>
+      <a href="{{ url_for('auth.index') }}" class="btn btn-primary btn-block">Go to homepage</a>
+    </div>
+  </div>
+</body>
+</html>

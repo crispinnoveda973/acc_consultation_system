@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Consultations — {{ site_name }}{% endblock %}
+{% block page_title %}All Consultations{% endblock %}
+{% block page_subtitle %}System-wide consultation records{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div>
+    <h2>Consultations</h2>
+    <p>{{ consultations|length }} record(s)</p>
+  </div>
+</div>
+
+<div class="filter-row">
+  <a href="{{ url_for('admin.consultations') }}" class="filter-pill {{ 'active' if not status_filter }}">All</a>
+  <a href="{{ url_for('admin.consultations', status='pending') }}" class="filter-pill {{ 'active' if status_filter == 'pending' }}">Pending</a>
+  <a href="{{ url_for('admin.consultations', status='in_progress') }}" class="filter-pill {{ 'active' if status_filter == 'in_progress' }}">In Progress</a>
+  <a href="{{ url_for('admin.consultations', status='resolved') }}" class="filter-pill {{ 'active' if status_filter == 'resolved' }}">Resolved</a>
+  <a href="{{ url_for('admin.consultations', status='closed') }}" class="filter-pill {{ 'active' if status_filter == 'closed' }}">Closed</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr><th>Subject</th><th>Student</th><th>Expert</th><th>Priority</th><th>Status</th><th>Updated</th></tr>
+    </thead>
+    <tbody>
+      {% for c in consultations %}
+      <tr onclick="window.location='{{ url_for('admin.consultation_detail', cid=c.id) }}'" style="cursor:pointer;">
+        <td>{{ c.subject }}</td>
+        <td>{{ c.student.full_name }}</td>
+        <td>{{ c.expert.full_name if c.expert else "Unassigned" }}</td>
+        <td><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></td>
+        <td><span class="badge badge-{{ c.status }}">{{ c.status_label() }}</span></td>
+        <td class="text-muted">{{ c.updated_at.strftime('%b %d, %Y %H:%M') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6"><div class="empty-state">No consultations found.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

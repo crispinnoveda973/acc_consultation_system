@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% block title %}Consultation History — {{ site_name }}{% endblock %}
+{% block page_title %}Consultation History{% endblock %}
+{% block page_subtitle %}All of your past and current requests{% endblock %}
+
+{% block content %}
+<div class="page-header">
+  <div><h2>History</h2><p>{{ consultations|length }} record(s)</p></div>
+  <a href="{{ url_for('student.new_consultation') }}" class="btn btn-primary">+ New Consultation</a>
+</div>
+
+<div class="filter-row">
+  <a href="{{ url_for('student.history') }}" class="filter-pill {{ 'active' if not status_filter }}">All</a>
+  <a href="{{ url_for('student.history', status='pending') }}" class="filter-pill {{ 'active' if status_filter == 'pending' }}">Pending</a>
+  <a href="{{ url_for('student.history', status='in_progress') }}" class="filter-pill {{ 'active' if status_filter == 'in_progress' }}">In Progress</a>
+  <a href="{{ url_for('student.history', status='resolved') }}" class="filter-pill {{ 'active' if status_filter == 'resolved' }}">Resolved</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead><tr><th>Subject</th><th>Expert</th><th>Priority</th><th>Status</th><th>Submitted</th></tr></thead>
+    <tbody>
+      {% for c in consultations %}
+      <tr onclick="window.location='{{ url_for('student.consultation_detail', cid=c.id) }}'" style="cursor:pointer;">
+        <td>{{ c.subject }}</td>
+        <td>{{ c.expert.full_name if c.expert else "Awaiting assignment" }}</td>
+        <td><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></td>
+        <td><span class="badge badge-{{ c.status }}">{{ c.status_label() }}</span></td>
+        <td class="text-muted">{{ c.created_at.strftime('%b %d, %Y') }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5"><div class="empty-state">No consultations found.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

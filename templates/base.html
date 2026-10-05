@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}{{ site_name }}{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <div class="logo-mark">ACC</div>
+        <div>
+          <strong>{{ site_name }}</strong>
+          <span>Campus Health Portal</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section-label">Menu</div>
+      <nav class="sidebar-nav">
+        {% if current_user.role == 'super_admin' %}
+          <a href="{{ url_for('admin.dashboard') }}" class="{{ 'active' if request.endpoint == 'admin.dashboard' }}"><span class="icon">&#9673;</span> Dashboard</a>
+          <a href="{{ url_for('admin.users') }}" class="{{ 'active' if request.endpoint and request.endpoint.startswith('admin.') and 'user' in request.endpoint }}"><span class="icon">&#128101;</span> Manage Users</a>
+          <a href="{{ url_for('admin.consultations') }}" class="{{ 'active' if request.endpoint and 'consultation' in request.endpoint }}"><span class="icon">&#128172;</span> Consultations</a>
+          <a href="{{ url_for('admin.settings') }}" class="{{ 'active' if request.endpoint == 'admin.settings' }}"><span class="icon">&#9881;</span> System Settings</a>
+        {% elif current_user.role == 'medical_expert' %}
+          <a href="{{ url_for('expert.dashboard') }}" class="{{ 'active' if request.endpoint == 'expert.dashboard' }}"><span class="icon">&#9673;</span> Dashboard</a>
+          <a href="{{ url_for('expert.consultations', view='assigned') }}" class="{{ 'active' if request.endpoint and 'consultation' in request.endpoint }}"><span class="icon">&#128172;</span> My Consultations</a>
+          <a href="{{ url_for('expert.consultations', view='pool') }}" class="{{ 'active' if request.args.get('view') == 'pool' }}"><span class="icon">&#128203;</span> Unassigned Pool</a>
+          <a href="{{ url_for('expert.students') }}" class="{{ 'active' if request.endpoint == 'expert.students' }}"><span class="icon">&#127891;</span> My Students</a>
+        {% elif current_user.role == 'student' %}
+          <a href="{{ url_for('student.dashboard') }}" class="{{ 'active' if request.endpoint == 'student.dashboard' }}"><span class="icon">&#9673;</span> Dashboard</a>
+          <a href="{{ url_for('student.new_consultation') }}" class="{{ 'active' if request.endpoint == 'student.new_consultation' }}"><span class="icon">&#10133;</span> New Consultation</a>
+          <a href="{{ url_for('student.history') }}" class="{{ 'active' if request.endpoint and 'history' in request.endpoint or (request.endpoint == 'student.consultation_detail') }}"><span class="icon">&#128220;</span> Consultation History</a>
+        {% endif %}
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="sidebar-user">
+          <div class="avatar">{{ current_user.full_name[0] | upper }}</div>
+          <div class="who">
+            <strong>{{ current_user.full_name }}</strong>
+            <span>{{ current_user.role_label() }}</span>
+          </div>
+        </div>
+        <a href="{{ url_for('auth.logout') }}" class="logout-link"><span class="icon">&#8630;</span> Log out</a>
+      </div>
+    </aside>
+
+    <div class="main-area">
+      <header class="topbar">
+        <div>
+          <h1>{% block page_title %}Dashboard{% endblock %}</h1>
+          <p class="topbar-sub">{% block page_subtitle %}Welcome back{% endblock %}</p>
+        </div>
+        <span class="role-pill {{ current_user.role }}">{{ current_user.role_label() }}</span>
+      </header>
+
+      <main class="main-content">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="flash-messages">
+              {% for category, message in messages %}
+                <div class="flash flash-{{ category }}">
+                  <span>{{ message }}</span>
+                  <button class="flash-close" type="button">&times;</button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+      </main>
+    </div>
+  </div>
+
+  <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

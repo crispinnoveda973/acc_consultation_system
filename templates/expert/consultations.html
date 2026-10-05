@@ -1,0 +1,45 @@
+{% extends "base.html" %}
+{% block title %}Consultations — {{ site_name }}{% endblock %}
+{% block page_title %}{{ "Unassigned Pool" if view == "pool" else "My Consultations" }}{% endblock %}
+{% block page_subtitle %}{{ "Claim a request to begin responding" if view == "pool" else "Consultations assigned to you" }}{% endblock %}
+
+{% block content %}
+<div class="filter-row">
+  <a href="{{ url_for('expert.consultations', view='assigned') }}" class="filter-pill {{ 'active' if view != 'pool' }}">My Consultations</a>
+  <a href="{{ url_for('expert.consultations', view='pool') }}" class="filter-pill {{ 'active' if view == 'pool' }}">Unassigned Pool</a>
+</div>
+
+<div class="table-wrap">
+  <table>
+    <thead>
+      <tr>
+        <th>Subject</th><th>Student</th><th>Priority</th>
+        {% if view != 'pool' %}<th>Status</th>{% endif %}
+        <th>Submitted</th><th></th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for c in consultations %}
+      <tr>
+        <td {% if view != 'pool' %}onclick="window.location='{{ url_for('expert.consultation_detail', cid=c.id) }}'" style="cursor:pointer;"{% endif %}>{{ c.subject }}</td>
+        <td>{{ c.student.full_name }}</td>
+        <td><span class="priority-tag priority-{{ c.priority }}">{{ c.priority }}</span></td>
+        {% if view != 'pool' %}<td><span class="badge badge-{{ c.status }}">{{ c.status_label() }}</span></td>{% endif %}
+        <td class="text-muted">{{ c.created_at.strftime('%b %d, %Y') }}</td>
+        <td style="text-align:right;">
+          {% if view == 'pool' %}
+          <form method="POST" action="{{ url_for('expert.claim', cid=c.id) }}">
+            <button type="submit" class="btn btn-teal btn-sm">Claim</button>
+          </form>
+          {% else %}
+          <a href="{{ url_for('expert.consultation_detail', cid=c.id) }}" class="btn btn-outline btn-sm">Open</a>
+          {% endif %}
+        </td>
+      </tr>
+      {% else %}
+      <tr><td colspan="6"><div class="empty-state">Nothing here right now.</div></td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

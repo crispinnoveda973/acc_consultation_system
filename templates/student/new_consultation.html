@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}New Consultation — {{ site_name }}{% endblock %}
+{% block page_title %}New Consultation Request{% endblock %}
+{% block page_subtitle %}Describe your concern and a Medical Expert will respond{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 640px;">
+  <form method="POST">
+    <div class="form-group">
+      <label for="subject">Subject</label>
+      <input type="text" id="subject" name="subject" placeholder="e.g. Persistent cough for 3 days" value="{{ form.get('subject','') }}" required>
+    </div>
+    <div class="form-group">
+      <label for="description">Description</label>
+      <textarea id="description" name="description" placeholder="Describe your symptoms or concern in detail...">{{ form.get('description','') }}</textarea>
+    </div>
+    <div class="form-group">
+      <label for="priority">Priority</label>
+      <select id="priority" name="priority">
+        <option value="low" {{ 'selected' if form.get('priority') == 'low' }}>Low</option>
+        <option value="normal" {{ 'selected' if not form.get('priority') or form.get('priority') == 'normal' }}>Normal</option>
+        <option value="high" {{ 'selected' if form.get('priority') == 'high' }}>High</option>
+        <option value="urgent" {{ 'selected' if form.get('priority') == 'urgent' }}>Urgent</option>
+      </select>
+    </div>
+    <div class="flex-between mt-1">
+      <a href="{{ url_for('student.dashboard') }}" class="btn btn-outline">Cancel</a>
+      <button type="submit" class="btn btn-primary">Submit Request</button>
+    </div>
+  </form>
+</div>
+{% endblock %}
